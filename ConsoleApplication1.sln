@@ -1,31 +1,196 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8 d17.14
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{48F356A9-FC1A-451F-ACBF-CAE818135539}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Debug|x64.ActiveCfg = Debug|x64
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Debug|x64.Build.0 = Debug|x64
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Debug|x86.ActiveCfg = Debug|Win32
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Debug|x86.Build.0 = Debug|Win32
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Release|x64.ActiveCfg = Release|x64
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Release|x64.Build.0 = Release|x64
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Release|x86.ActiveCfg = Release|Win32
-		{48F356A9-FC1A-451F-ACBF-CAE818135539}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {FF70F1AB-1302-4BE4-9068-34A6E45B75D7}
-	EndGlobalSection
-EndGlobal
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+// сложение в двоичной сс
+string twoSum(string a, string b) {
+    string result = "";
+    int carry = 0; // переносимое число (остаточек)
+
+    // выравание кол-ва знаков в дс, чтобы совпадали разряды
+    while (a.length() < b.length()) a = "0" + a;
+    while (b.length() < a.length()) b = "0" + b;
+
+    // складываем с конца
+    for (int i = a.length() - 1; i >= 0; i--) {
+        int bitA = a[i] - '0';
+        int bitB = b[i] - '0';
+
+        int sum = bitA + bitB + carry;
+
+        if (sum == 0) {
+            result = "0" + result;
+            carry = 0;
+        }
+        else if (sum == 1) {
+            result = "1" + result;
+            carry = 0;
+        }
+        else if (sum == 2) {
+            result = "0" + result;
+            carry = 1;
+        }
+        else if (sum == 3) {
+            result = "1" + result;
+            carry = 1;
+        }
+    }
+
+    if (carry == 1) {
+        result = "1" + result;
+    }
+
+    return result;
+}
+
+// вычитание в двоичной системе
+string binarySub(string a, string b) {
+    string result = "";
+    int borrow = 0; // заем
+
+    // выравнивание по разрядам
+    while (a.length() < b.length()) a = "0" + a;
+    while (b.length() < a.length()) b = "0" + b;
+
+    // вычитаем с конца
+    for (int i = a.length() - 1; i >= 0; i--) {
+        int bitA = a[i] - '0';
+        int bitB = b[i] - '0';
+
+        // - заем от большего при нехватке 
+        bitA = bitA - borrow;
+
+        if (bitA >= bitB) {
+            result = to_string(bitA - bitB) + result;
+            borrow = 0;
+        }
+        else {
+            result = to_string(bitA + 2 - bitB) + result;
+            borrow = 1;
+        }
+    }
+
+    return result;
+}
+
+// сложение в восьмеричной сис
+string octalSum(string a, string b) {
+    string result = "";
+    int carry = 0;
+
+    while (a.length() < b.length()) a = "0" + a;
+    while (b.length() < a.length()) b = "0" + b;
+
+    // складываем с конца
+    for (int i = a.length() - 1; i >= 0; i--) {
+        int dA = a[i] - '0';
+        int dB = b[i] - '0';
+
+        int sum = dA + dB + carry;
+
+        if (sum < 8) {
+            result = to_string(sum) + result;
+            carry = 0;
+        }
+        else {
+            result = to_string(sum - 8) + result;
+            carry = 1;
+        }
+    }
+
+    if (carry == 1) {
+        result = "1" + result;
+    }
+
+    return result;
+}
+
+// вычитание в восьмеричной сис 
+string octalSub(string a, string b) {
+    string result = "";
+    int borrow = 0;
+
+    while (a.length() < b.length()) a = "0" + a;
+    while (b.length() < a.length()) b = "0" + b;
+
+    for (int i = a.length() - 1; i >= 0; i--) {
+        int digA = a[i] - '0';
+        int digB = b[i] - '0';
+
+        digA = digA - borrow;
+
+        if (digA >= digB) {
+            result = to_string(digA - digB) + result;
+            borrow = 0;
+        }
+        else {
+            result = to_string(digA + 8 - digB) + result;
+            borrow = 1;
+        }
+    }
+
+    return result;
+}
+
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    int vibor;
+    string chislo1, chislo2;
+
+    cout << "выбор системы счисления" << endl;
+    cout << "2 - двоичная система" << endl;
+    cout << "8 - восьмеричная система" << endl;
+    cin >> vibor;
+
+    if (vibor == 2) {
+        cout << "двочианя система" << endl;
+        cout << "введи первое число: ";
+        cin >> chislo1;
+        cout << "введи второе число: ";
+        cin >> chislo2;
+
+        // сложение
+        string binSum = twoSum(chislo1, chislo2);
+        cout << "\n" << chislo1 << " + " << chislo2 << " = " << binSum << endl;
+
+        // вычитаем
+        string binSub = binarySub(chislo1, chislo2);
+        cout << chislo1 << " - " << chislo2 << " = " << binSub << endl;
+    }
+    else if (vibor == 8) {
+        cout << "\nвосьмеричная система" << endl;
+        cout << "введи первое число: ";
+        cin >> chislo1;
+        cout << "введи второе число: ";
+        cin >> chislo2;
+
+        // складываем
+        string octSum = octalSum(chislo1, chislo2);
+        cout << "\n" << chislo1 << " + " << chislo2 << " = " << octSum << endl;
+
+        // вычитаем
+        string octSub = octalSub(chislo1, chislo2);
+        cout << chislo1 << " - " << chislo2 << " = " << octSub << endl;
+    }
+    else {
+        cout << "Ошибка! Нужно выбрать 2 или 8" << endl;
+    }
+
+    // Спрашиваем, хочет ли пользователь попробовать еще раз
+    cout << "\nпродолжить... (1 - да, 2 - нет): ";
+    cin >> vibor;
+
+    if (vibor == 1) {
+        cout << "\n";
+        main(); // запускаем заново
+    }
+    else {
+        cout << "пока!" << endl;
+    }
+
+    return 0;
+}
